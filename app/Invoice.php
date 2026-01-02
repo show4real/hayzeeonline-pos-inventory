@@ -30,6 +30,8 @@ class Invoice extends Model
         'amount',
         'amount_paid',
         'balance',
+        'vat_amount',
+        'vat_rate',
         'payment_mode',
         'edited_by'
     ];

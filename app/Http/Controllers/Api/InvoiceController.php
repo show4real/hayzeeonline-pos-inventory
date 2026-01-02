@@ -152,6 +152,8 @@ class InvoiceController extends Controller
         $invoice->issued_date = $request->issue_date;
         $invoice->due_date = $request->due_date;
         $invoice->amount = $request->total_amount;
+    $invoice->vat_amount = $request->vat_amount ?? null;
+    $invoice->vat_rate = $request->vat_rate ?? null;
         $invoice->amount_paid = $request->amount_paid;
         $invoice->balance = $balance;
         $invoice->payment_type = "MANUAL";
@@ -203,6 +205,8 @@ class InvoiceController extends Controller
         $invoice->issued_date = $request->issued_date;
         $invoice->due_date = $request->due_date;
         $invoice->amount = $request->total_amount;
+    $invoice->vat_amount = $request->vat_amount ?? null;
+    $invoice->vat_rate = $request->vat_rate ?? null;
         $invoice->amount_paid = $request->amount_paid;
         $invoice->balance = $request->balance;
         $save= $invoice->save();

@@ -24,6 +24,9 @@ class CreateInvoicesTable extends Migration
             $table->string('due_date')->nullable();
             $table->integer('amount')->nullable();
             $table->integer('amount_paid')->nullable();
+            // VAT fields added to capture VAT payload from frontend
+            $table->integer('vat_amount')->nullable();
+            $table->integer('vat_rate')->nullable();
             $table->integer('balance')->nullable();
             $table->integer('payment_status')->nullable();
             $table->string('description')->nullable();
