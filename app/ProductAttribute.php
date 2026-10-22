@@ -4,9 +4,11 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Concerns\SerializesDatesForApi;
 
 class ProductAttribute extends Model
 {
+    use SerializesDatesForApi;
     use SoftDeletes;
     //protected $appends = [''];
     protected $hidden =['attribute','deleted_at','attribute_id'];

@@ -7,15 +7,16 @@ use App\Supplier;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Branch;
+use App\Concerns\SerializesDatesForApi;
 
 class PurchaseOrder extends Model
 {
+    use SerializesDatesForApi;
     use SoftDeletes;
     protected $table = "purchase_order";
     protected $appends = ["product_name", "product_description", "supplier_name", "profit", "new_stock_qty", "branch_name", "status", "in_stock", 'product_image','fixed_price'];
     protected $hidden = ["product"];
     protected $fillable = ['quantity_sold','unit_selling_price'];
-    protected $dates = [ 'created_at' ];
     protected $casts = [
         'stock_qty' => 'integer',
         'unit_price'  => 'integer',

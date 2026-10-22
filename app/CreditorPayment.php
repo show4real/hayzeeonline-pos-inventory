@@ -3,9 +3,12 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Concerns\SerializesDatesForApi;
 
 class CreditorPayment extends Model
 {
+    use SerializesDatesForApi;
+
     protected $table = 'creditors_payments';
     protected $appends = ["supplier_name","paid_by"];
 

@@ -5,9 +5,11 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use App\Invoice;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Concerns\SerializesDatesForApi;
 
 class Payment extends Model
 {
+    use SerializesDatesForApi;
     use SoftDeletes;
     protected $appends = [
         'invoice_num'

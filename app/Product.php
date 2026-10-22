@@ -5,8 +5,10 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\ProductImage;
+use App\Concerns\SerializesDatesForApi;
 class Product extends Model
 {
+    use SerializesDatesForApi;
     use SoftDeletes;
 
     protected $appends = ['category_name','brand_name','product_image'];

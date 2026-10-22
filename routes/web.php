@@ -5,9 +5,9 @@
 | Web Routes
 |--------------------------------------------------------------------------
 |
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
+| Loaded by withRouting() in bootstrap/app.php and wrapped in the "web"
+| middleware group. This is an API; the only web route is the stock welcome
+| page, which tests/Feature/ExampleTest.php asserts still answers 200.
 |
 */
 

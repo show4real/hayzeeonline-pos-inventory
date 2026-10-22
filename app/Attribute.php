@@ -3,9 +3,12 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Concerns\SerializesDatesForApi;
 
 class Attribute extends Model
 {
+    use SerializesDatesForApi;
+
     protected $table="attributes";
     //protected $appends=[''];
     protected $hidden=['created_at','updated_at','deleted_at','slug'];

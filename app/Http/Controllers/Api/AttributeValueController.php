@@ -4,11 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\attributeValue;
+use App\AttributeValue;
 use App\Product;
+use Illuminate\Support\Str;
 
 
-class attributeValueController extends Controller
+class AttributeValueController extends Controller
 {
     
     public function index(Request $request){
@@ -59,7 +60,7 @@ class attributeValueController extends Controller
         }
         $name=$attributeValue->name;
         $attributeValue->name = $request->name;
-        $attributeValue->slug = str_slug($request->slug, "-");
+        $attributeValue->slug = Str::slug($request->slug, "-");
         $save=$attributeValue->save();
         if($save){
             $products = Product::where('attributeValue_id', '=',$attributeValue->id)->first();

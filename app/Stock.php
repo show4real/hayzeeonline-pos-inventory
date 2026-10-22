@@ -5,9 +5,11 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\PurchaseOrder;
+use App\Concerns\SerializesDatesForApi;
 
 class Stock extends Model
 {
+    use SerializesDatesForApi;
     use SoftDeletes;
     protected $appends=[
         "supplier_id",

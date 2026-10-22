@@ -1,0 +1,149 @@
+# Production stack for the VPS.
+#
+# The database is external and reached through the .env on the server, so
+# there is no db container here. TLS is terminated by the Apache instance
+# already on the box; this stack publishes one port, bound to localhost, for
+# that proxy to forward to.
+#
+#   docker compose -f docker-compose.prod.yml up -d
+#
+# Images are built by CI and pulled by tag — nothing is built on the server.
+
+x-app: &app
+  image: ${APP_IMAGE:?set APP_IMAGE, e.g. ghcr.io/show4real/hayzeeonline-pos-inventory-app:latest}
+  restart: unless-stopped
+  env_file: [.env]
+  depends_on:
+    redis:
+      condition: service_healthy
+  volumes:
+    # Product images and logs are the only state the app owns; everything else
+    # lives in the image and is replaced wholesale on deploy.
+    - uploads:/var/www/storage/app/public
+    - logs:/var/www/storage/logs
+  networks: [internal]
+  # Lets DB_HOST=host.docker.internal reach a database listening on the VPS
+  # itself. Harmless when the database is on another host.
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
+  logging: &logging
+    driver: json-file
+    options: {max-size: "10m", max-file: "3"}
+
+services:
+  app:
+    <<: *app
+    container_name: ${STACK_NAME:-hayzee_pos_api}_app
+    environment:
+      CONTAINER_ROLE: app
+    # php-fpm is only ever reached by nginx over the internal network.
+    expose: ["9000"]
+
+  nginx:
+    image: ${NGINX_IMAGE:?set NGINX_IMAGE, e.g. ghcr.io/show4real/hayzeeonline-pos-inventory-nginx:latest}
+    container_name: ${STACK_NAME:-hayzee_pos_api}_nginx
+    restart: unless-stopped
+    depends_on:
+      app:
+        condition: service_started
+    ports:
+      # Bound to localhost: only the Apache vhost on this host can reach it.
+      - "127.0.0.1:${APP_PORT:-8095}:80"
+    volumes:
+      # Read-only, purely so the /storage/ location can serve product images.
+      - uploads:/var/www/storage/app/public:ro
+    networks: [internal]
+    logging: *logging
+
+  redis:
+    image: redis:7-alpine
+    container_name: ${STACK_NAME:-hayzee_pos_api}_redis
+    restart: unless-stopped
+    # Cache and sessions can be rebuilt, so persistence is light. It matters
+    # mainly because the API's rate limiter (throttle:60,1) counts in the
+    # cache: on the file store those counters would be per-container and
+    # would reset on every deploy.
+    #
+    # volatile-lru evicts only keys that carry a TTL, which cache entries and
+    # rate-limit counters do.
+    command: >
+      redis-server
+      --appendonly yes
+      --maxmemory ${REDIS_MAXMEMORY:-256mb}
+      --maxmemory-policy volatile-lru
+      --save 60 1000
+    volumes:
+      - redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+    networks: [internal]
+    logging: *logging
+
+  # ---------------------------------------------------------------------------
+  # Background workers — OFF by default, behind a profile.
+  #
+  # Nothing in this application queues a job or schedules a command today:
+  # QUEUE_CONNECTION is "sync", so work runs inline inside the request, and
+  # the scheduler has no tasks registered. Running these would mean two
+  # containers that do nothing but still need watching on every deploy.
+  #
+  # They are defined so that turning them on is a flag rather than a rewrite.
+  # When the app starts dispatching jobs, set QUEUE_CONNECTION=redis in the
+  # .env secret and deploy with the profile:
+  #
+  #   docker compose -f docker-compose.prod.yml --profile workers up -d
+  #
+  # deploy.sh passes --profile workers automatically when WITH_WORKERS=1.
+  # ---------------------------------------------------------------------------
+
+  # --max-time recycles the worker every hour so a leak or a stale image
+  # cannot linger; restart: unless-stopped brings it back.
+  queue:
+    <<: *app
+    profiles: ["workers"]
+    container_name: ${STACK_NAME:-hayzee_pos_api}_queue
+    environment:
+      CONTAINER_ROLE: queue
+    command: php artisan queue:work --queue=default --tries=3 --backoff=10 --max-time=3600 --sleep=3
+    stop_grace_period: 60s
+    healthcheck:
+      test: ["CMD", "sh", "-c", "pgrep -f 'queue:work' >/dev/null || exit 1"]
+      interval: 60s
+      timeout: 5s
+      retries: 3
+
+  # schedule:work is the long-running equivalent of the one-minute cron entry,
+  # which keeps cron out of the image entirely.
+  scheduler:
+    <<: *app
+    profiles: ["workers"]
+    container_name: ${STACK_NAME:-hayzee_pos_api}_scheduler
+    environment:
+      CONTAINER_ROLE: scheduler
+    command: php artisan schedule:work
+    stop_grace_period: 60s
+    # The image's own healthcheck pings php-fpm, which does not run here —
+    # without this override the container would sit permanently unhealthy.
+    healthcheck:
+      test: ["CMD", "sh", "-c", "pgrep -f 'schedule:work' >/dev/null || exit 1"]
+      interval: 60s
+      timeout: 5s
+      retries: 3
+
+# Names carry STACK_NAME so this stack cannot share uploads, logs, redis or a
+# network with anything else on the same host.
+volumes:
+  uploads:
+    name: ${STACK_NAME:-hayzee_pos_api}_uploads
+  logs:
+    name: ${STACK_NAME:-hayzee_pos_api}_logs
+  redis:
+    name: ${STACK_NAME:-hayzee_pos_api}_redis
+
+networks:
+  internal:
+    name: ${STACK_NAME:-hayzee_pos_api}_net
