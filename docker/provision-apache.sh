@@ -4,12 +4,12 @@
 #
 # TLS is deliberately NOT handled here — issue the certificate yourself, once:
 #
-#   sudo certbot --apache -d pos-api.hayzeeonline.com
+#   sudo certbot --apache -d pos-inventory-api.hayzeeonline.com
 #
 # Usage:
 #
 #   sudo ./docker/provision-apache.sh <domain> <app-port>
-#   sudo ./docker/provision-apache.sh pos-api.hayzeeonline.com 8095
+#   sudo ./docker/provision-apache.sh pos-inventory-api.hayzeeonline.com 8095
 #
 # Runs on every deploy, so it is careful about two things:
 #

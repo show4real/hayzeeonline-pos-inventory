@@ -19,7 +19,7 @@ Nothing is built on the server, and no configuration is edited by hand on it.
                                             MySQL (external, via .env)
 ```
 
-* `pos-api.hayzeeonline.com` → Apache → `127.0.0.1:8095` → the stack.
+* `pos-inventory-api.hayzeeonline.com` → Apache → `127.0.0.1:8095` → the stack.
 * The published port is bound to loopback, so Apache is the only way in.
 * The database is **external**: there is no `db` container in production. It is
   reached through `DB_HOST` in the `.env` secret.
@@ -33,7 +33,7 @@ Nothing is built on the server, and no configuration is edited by hand on it.
 Point the name at the VPS:
 
 ```
-pos-api.hayzeeonline.com.   A   <vps-ip>
+pos-inventory-api.hayzeeonline.com.   A   <vps-ip>
 ```
 
 Do this *before* running certbot — the HTTP-01 challenge resolves the name.
@@ -108,7 +108,7 @@ APP_DEBUG=false
 
 # Must match DOMAIN in the workflow. The 'public' filesystem disk builds
 # product image URLs from it, so getting it wrong means broken images.
-APP_URL=https://pos-api.hayzeeonline.com
+APP_URL=https://pos-inventory-api.hayzeeonline.com
 
 # Africa/Lagos, not UTC. See §5.
 APP_TIMEZONE=Africa/Lagos
@@ -194,10 +194,10 @@ The run does, in order:
 first successful deploy:
 
 ```bash
-sudo certbot --apache -d pos-api.hayzeeonline.com
+sudo certbot --apache -d pos-inventory-api.hayzeeonline.com
 ```
 
-Certbot copies the `:80` vhost to `pos-api.hayzeeonline.com-le-ssl.conf`, adds
+Certbot copies the `:80` vhost to `pos-inventory-api.hayzeeonline.com-le-ssl.conf`, adds
 the certificate directives and turns the original into a redirect. Later
 deploys leave that alone: the script never rewrites a vhost file that already
 exists, precisely so it cannot undo this.
