@@ -6,9 +6,11 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use App\Concerns\SerializesDatesForApi;
 
 class User extends Authenticatable implements JWTSubject
 {
+    use SerializesDatesForApi;
     use Notifiable;
 
     /**
@@ -24,16 +26,15 @@ class User extends Authenticatable implements JWTSubject
 
    
 
+    // `protected $dates` was removed in Laravel 10 — a datetime cast does the
+    // same job. recovery_expiry came from that list and is kept here so the
+    // password-recovery comparison still gets a Carbon instance, not a string.
     protected $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
+        'recovery_expiry' => 'datetime',
         'admin' => 'integer',
-        'id'=>'integer'
-    ];
-    protected $dates = [
-        'created_at',
-        'updated_at',
-        'recovery_expiry'
+        'id' => 'integer',
     ];
 
     protected $appends = [

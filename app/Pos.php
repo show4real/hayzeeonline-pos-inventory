@@ -9,9 +9,11 @@ use App\Supplier;
 use App\StockSerialNo;
 use App\CompanySettings;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Concerns\SerializesDatesForApi;
 
 class Pos extends Model
 {
+    use SerializesDatesForApi;
     use SoftDeletes;
     protected $table = "pos";
 

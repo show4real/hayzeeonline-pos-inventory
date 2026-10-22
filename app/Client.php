@@ -3,9 +3,12 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Concerns\SerializesDatesForApi;
 
 class Client extends Model
 {
+    use SerializesDatesForApi;
+
     public function scopeSearch($query, $filter)
     {
     	$searchQuery = trim($filter);

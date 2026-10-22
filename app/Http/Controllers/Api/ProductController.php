@@ -10,6 +10,7 @@ use App\Category;
 // use App\Brand;
 use App\Supplier;
 use Validator;
+use Illuminate\Support\Str;
 class ProductController extends Controller
 {
     protected $product;
@@ -56,7 +57,7 @@ class ProductController extends Controller
         $product->status =$request->status;
         $product->name = $request->product_name;
         $product->description = $request->description;
-        $product->slug = str_slug($request->product_name, "-");
+        $product->slug = Str::slug($request->product_name, "-");
         $product->save();
         return response()->json(compact('product'));
     }
@@ -74,7 +75,7 @@ class ProductController extends Controller
         $product->name = $request->name;
         $product->description = $request->description;
         $product->status =true;
-        $product->slug = str_slug($request->slug, "-");
+        $product->slug = Str::slug($request->slug, "-");
         $product->update();
         return response()->json(compact('product'));
     }

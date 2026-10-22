@@ -6,8 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 use App\Product;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Concerns\SerializesDatesForApi;
 class Supplier extends Model
 {
+    use SerializesDatesForApi;
     use SoftDeletes;
     protected $table="supplier";
     protected $fillable=['name','supplier_id'];

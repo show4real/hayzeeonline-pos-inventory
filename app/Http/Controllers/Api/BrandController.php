@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Brand;
 use App\Product;
 use Validator;
+use Illuminate\Support\Str;
 
 class BrandController extends Controller
 {
@@ -27,11 +28,11 @@ class BrandController extends Controller
 
             $brands[] = Brand::updateOrCreate(
                 ['name' => $values, 
-                'slug' => str_slug($values),
+                'slug' => Str::slug($values),
                 ],
 
                 ['name'=>$values,
-                'slug'=>str_slug($values),
+                'slug'=>Str::slug($values),
                 ]
             );
         }
@@ -49,7 +50,7 @@ class BrandController extends Controller
           return response()->json($validator->messages(), 422);
         }
         $brand->name = $request->name;
-        $brand->slug = str_slug($request->name, "-");
+        $brand->slug = Str::slug($request->name, "-");
         $save=$brand->save();
         
         return response()->json(compact('brand'));

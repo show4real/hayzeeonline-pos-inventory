@@ -3,9 +3,12 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Concerns\SerializesDatesForApi;
 
 class Brand extends Model
 {
+    use SerializesDatesForApi;
+
     protected $fillable=['name','slug'];
     public function scopeSearch($query, $filter)
     {

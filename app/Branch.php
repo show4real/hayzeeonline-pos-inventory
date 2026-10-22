@@ -3,9 +3,12 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Concerns\SerializesDatesForApi;
 
 class Branch extends Model
 {
+    use SerializesDatesForApi;
+
     protected $fillable=['name','branch_id'];
     public function scopeSearch($query, $filter)
     {

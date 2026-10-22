@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Category;
 use App\Product;
 use Validator;
+use Illuminate\Support\Str;
 
 
 class CategoryController extends Controller
@@ -29,11 +30,11 @@ class CategoryController extends Controller
 
             $categories[] = Category::updateOrCreate(
                 ['name' => $values, 
-                'slug' => str_slug($values),
+                'slug' => Str::slug($values),
                 ],
 
                 ['name'=>$values,
-                'slug'=>str_slug($values),
+                'slug'=>Str::slug($values),
                 ]
             );
         }
@@ -51,7 +52,7 @@ class CategoryController extends Controller
           return response()->json($validator->messages(), 422);
         }
         $category->name = $request->name;
-        $category->slug = str_slug($request->name, "-");
+        $category->slug = Str::slug($request->name, "-");
         $category->save();
         return response()->json(compact('category'));
     }

@@ -6,7 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Validator;
 use App\Attribute;
-use App\product;
+use App\Product;
+use Illuminate\Support\Str;
 class AttributeController extends Controller
 {
     public function index(Request $request){
@@ -29,12 +30,12 @@ class AttributeController extends Controller
 
             $attributes[] = Attribute::updateOrCreate(
                 ['name' => $values, 
-                'slug' => str_slug($values),
+                'slug' => Str::slug($values),
                 'product_id'=>$request['product_id'],
                 ],
 
                 ['name'=>$values,
-                'slug'=>str_slug($values),
+                'slug'=>Str::slug($values),
                 'product_id'=>$request['product_id'],
                 ]
             );
@@ -53,7 +54,7 @@ class AttributeController extends Controller
           return response()->json($validator->messages(), 422);
         }
         $attribute->name = $request->name;
-        $attribute->slug = str_slug($request->slug, "-");
+        $attribute->slug = Str::slug($request->slug, "-");
         $save=$attribute->save();
         if($save){
             $products = Product::where('attribute_id', '=',$attribute->id)->first();

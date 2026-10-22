@@ -4,9 +4,12 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Branch;
+use App\Concerns\SerializesDatesForApi;
 
 class PurchaseOrderSerial extends Model
 {
+    use SerializesDatesForApi;
+
     protected $fillable = ['purchase_order_id', 'moved_at','branch_moved_to','serial_no'];
 
     protected $appends = ['branch_name'];
