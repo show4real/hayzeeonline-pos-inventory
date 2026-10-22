@@ -39,7 +39,7 @@ chmod 600 .env
 # the shell environment ahead of the env file. One value then drives the
 # published port, the health check and the vhost, so they cannot drift.
 ENV_PORT="$(grep -E '^APP_PORT=' .env 2>/dev/null | head -1 | cut -d= -f2- | tr -d '"'"'"' ' || true)"
-APP_PORT="${APP_PORT:-${ENV_PORT:-8092}}"
+APP_PORT="${APP_PORT:-${ENV_PORT:-8095}}"
 export APP_PORT
 
 if [[ -n $ENV_PORT && $ENV_PORT != "$APP_PORT" ]]; then

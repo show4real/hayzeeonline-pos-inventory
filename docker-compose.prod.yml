@@ -48,7 +48,7 @@ services:
         condition: service_started
     ports:
       # Bound to localhost: only the Apache vhost on this host can reach it.
-      - "127.0.0.1:${APP_PORT:-8092}:80"
+      - "127.0.0.1:${APP_PORT:-8095}:80"
     volumes:
       # Read-only, purely so the /storage/ location can serve product images.
       - uploads:/var/www/storage/app/public:ro

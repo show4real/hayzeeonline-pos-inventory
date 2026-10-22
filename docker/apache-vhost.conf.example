@@ -2,7 +2,7 @@
 #
 # __DOMAIN__ and __PORT__ are substituted by docker/provision-apache.sh:
 #
-#   production  pos-api.hayzeeonline.com -> 127.0.0.1:8092
+#   production  pos-api.hayzeeonline.com -> 127.0.0.1:809
 #
 # Only the :80 vhost is declared here, on purpose. `certbot --apache` copies
 # it to <name>-le-ssl.conf, adds the certificate directives and turns this one

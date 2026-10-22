@@ -24,19 +24,8 @@ env:
   APP_IMAGE: ghcr.io/${{ github.repository }}-app
   NGINX_IMAGE: ghcr.io/${{ github.repository }}-nginx
 
-  # Everything below is configuration for THIS stack. Nothing here is secret,
-  # and nothing has to be typed into the GitHub UI — change it here.
-  #
-  # PROXY_PORT is the single source of truth for the port: it drives the
-  # container's published port, the health check and the Apache vhost, and it
-  # overrides APP_PORT in the .env secret. Only APP_URL in that secret still
-  # needs to match DOMAIN by hand.
-  #
-  # 8092 because the VPS may also host the hamzeal inventory stacks, which
-  # take 8090 and 8091. Check with `sudo ss -ltnp | grep 127.0.0.1:809` before
-  # changing it.
-  DOMAIN: pos-api.hayzeeonline.com
-  PROXY_PORT: "8092"
+  DOMAIN: pos-inventory-api.hayzeeonline.com
+  PROXY_PORT: "8095"
 
   # Keeps this stack's containers, volumes and network distinct from anything
   # else on the host.

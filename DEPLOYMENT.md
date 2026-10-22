@@ -9,7 +9,7 @@ Nothing is built on the server, and no configuration is edited by hand on it.
 ```
                   ┌─────────────────────── the VPS ───────────────────────┐
   browser ──TLS──▶ Apache :443  ──http──▶  nginx  ──fastcgi──▶  app       │
-                  │  (certbot)   127.0.0.1:8092   │            (php-fpm)  │
+                  │  (certbot)   127.0.0.1:8095   │            (php-fpm)  │
                   │                               │                │      │
                   │                          uploads volume ───────┘      │
                   │                                                │      │
@@ -19,7 +19,7 @@ Nothing is built on the server, and no configuration is edited by hand on it.
                                             MySQL (external, via .env)
 ```
 
-* `pos-api.hayzeeonline.com` → Apache → `127.0.0.1:8092` → the stack.
+* `pos-api.hayzeeonline.com` → Apache → `127.0.0.1:8095` → the stack.
 * The published port is bound to loopback, so Apache is the only way in.
 * The database is **external**: there is no `db` container in production. It is
   reached through `DB_HOST` in the `.env` secret.
@@ -62,14 +62,14 @@ The deploy user must be able to `sudo`, because `provision-apache.sh` writes
 the vhost and reloads Apache.
 
 **Check the port is free before the first deploy.** The workflow publishes
-`127.0.0.1:8092`. If this box also hosts the hamzeal inventory stacks they
+`127.0.0.1:8095`. If this box also hosts the hamzeal inventory stacks they
 hold 8090 and 8091:
 
 ```bash
 sudo ss -ltnp | grep '127.0.0.1:809'
 ```
 
-If 8092 is taken, change `PROXY_PORT` in `.github/workflows/main.yml` — it is
+If 8095 is taken, change `PROXY_PORT` in `.github/workflows/main.yml` — it is
 the single source of truth and drives the published port, the health check and
 the vhost together.
 
@@ -183,7 +183,7 @@ The run does, in order:
 4. **Copy** `.env`, `docker-compose.prod.yml` and `docker/` to the server.
 5. **Run `docker/deploy.sh`**, which pulls both images, runs
    `artisan migrate --force` once in a throwaway container, rolls the stack,
-   and polls `http://127.0.0.1:8092/up` for 40s. **If it never answers, the
+   and polls `http://127.0.0.1:8095/up` for 40s. **If it never answers, the
    previous images are put back.**
 6. **Run `docker/provision-apache.sh`**, which writes and enables the vhost if
    it is not already serving the name.
@@ -212,7 +212,7 @@ Re-run the workflow for the older tag from the Actions tab, or on the server:
 cd /srv/hayzee-pos-api
 APP_IMAGE=ghcr.io/show4real/hayzeeonline-pos-inventory-app:v1.0.0 \
 NGINX_IMAGE=ghcr.io/show4real/hayzeeonline-pos-inventory-nginx:v1.0.0 \
-STACK_NAME=hayzee_pos_api APP_PORT=8092 \
+STACK_NAME=hayzee_pos_api APP_PORT=8095 \
   docker compose -f docker-compose.prod.yml up -d
 ```
 
@@ -307,7 +307,7 @@ docker compose -f docker-compose.prod.yml logs -f --tail=100 app
 docker compose -f docker-compose.prod.yml logs -f --tail=100 nginx
 
 # Does the stack answer behind the proxy?
-curl -i http://127.0.0.1:8092/up
+curl -i http://127.0.0.1:8095/up
 
 # Is Apache actually serving the name?
 sudo apache2ctl -S | grep pos-api

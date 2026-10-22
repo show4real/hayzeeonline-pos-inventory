@@ -9,7 +9,7 @@
 # Usage:
 #
 #   sudo ./docker/provision-apache.sh <domain> <app-port>
-#   sudo ./docker/provision-apache.sh pos-api.hayzeeonline.com 8092
+#   sudo ./docker/provision-apache.sh pos-api.hayzeeonline.com 8095
 #
 # Runs on every deploy, so it is careful about two things:
 #
