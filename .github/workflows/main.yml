@@ -56,6 +56,19 @@ jobs:
       - name: Install dependencies
         run: composer install --prefer-dist --no-interaction --no-progress
 
+      # phpunit.xml supplies APP_KEY, JWT_SECRET and everything else the suite
+      # needs, so the values in here are never used. The *file* still has to
+      # exist: .env is gitignored, so on a fresh checkout phpdotenv calls
+      # @file_get_contents('.env') on a missing path, and PHPUnit's error
+      # handler — which is installed before Laravel replaces it with its own —
+      # reports that suppressed warning against every test.
+      #
+      # Laravel builds its env repository with ->immutable(), so the empty
+      # APP_KEY= and JWT_SECRET= in .env.example cannot override the test keys
+      # phpunit.xml has already set.
+      - name: Create .env
+        run: cp .env.example .env
+
       # phpunit.xml points the suite at an in-memory SQLite database, so no
       # service container is needed.
       - name: Run tests
