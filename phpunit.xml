@@ -23,6 +23,23 @@
         <env name="APP_ENV" value="testing"/>
         <env name="APP_MAINTENANCE_DRIVER" value="file"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
+        <!--
+            Throwaway keys, so the suite does not depend on a .env file.
+
+            CI checks out the repository and runs the tests; .env is gitignored
+            and never exists there, so without these the run dies with
+            MissingAppKeyException, and every JWT test with "Secret is not
+            set." It passed locally only because a developer's .env happened
+            to supply both.
+
+            Laravel builds its env repository with ->immutable(), so values
+            set here are NOT overwritten by a .env that does exist. These are
+            therefore what the tests use everywhere, which is the point: the
+            suite is deterministic and does not read production-shaped
+            secrets. Neither value is used outside the test run.
+        -->
+        <env name="APP_KEY" value="base64:JH4t7mu9z/G9ytUhUHAuLPvbM2W0XlXmQ4K1tI11zek="/>
+        <env name="JWT_SECRET" value="333a7d8cfd590d88fbba60caefa47ad8b420fa8b886933341ca0352ac55f5d5f"/>
         <!-- Renamed by Laravel 11: CACHE_DRIVER -> CACHE_STORE,
              MAIL_DRIVER -> MAIL_MAILER. -->
         <env name="CACHE_STORE" value="array"/>
